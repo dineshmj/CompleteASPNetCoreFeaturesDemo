@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using MyBank.Common.Entities
+
+@inject HttpClient Http
+
+<h4>Search Customer</h4>
+
+<div class="input-group mb-3" style="max-width: 350px;">
+    <input type="text" class="form-control" @bind="SearchTerm" placeholder="Enter name or ID" />
+    <button class="btn btn-primary" @onclick="Search">Search</button>
+</div>
+
+@if (IsLoading)
+{
+    <p>Loading…</p>
+}
+else if (SearchResults is not null)
+{
+    <CustomerGrid Customers="SearchResults" />
+}
+
+@code {
+    private string? SearchTerm;
+    private bool IsLoading;
+    private List<Customer>? SearchResults;
+
+    private async Task Search()
+    {
+        if (string.IsNullOrWhiteSpace(SearchTerm))
+            return;
+
+        IsLoading = true;
+
+        // Backend API example
+        SearchResults = await Http.GetFromJsonAsync<List<Customer>>(
+            $"customers/search?query={Uri.EscapeDataString(SearchTerm!)}");
+
+        IsLoading = false;
+    }
+}

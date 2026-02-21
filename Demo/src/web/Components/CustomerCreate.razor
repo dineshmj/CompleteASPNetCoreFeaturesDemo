@@ -1,0 +1,33 @@
+﻿@using MyBank.Common.Entities
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h4>Create New Customer</h4>
+
+<EditForm Model="Model" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>First Name</label>
+        <InputText class="form-control" @bind-Value="Model.FirstName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <InputText class="form-control" @bind-Value="Model.EmailAddress" />
+    </div>
+
+    <button class="btn btn-success">Save</button>
+</EditForm>
+
+@code {
+    private MyBank.Common.Entities.Customer Model = new ();
+
+    private async Task Save ()
+    {
+        await Http.PostAsJsonAsync ("customers", Model);
+        Navigation.NavigateTo ("/customer-mgmt");
+    }
+}

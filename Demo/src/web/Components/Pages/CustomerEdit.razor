@@ -1,0 +1,90 @@
+﻿@using MyBank.Common.Entities
+
+@page "/customer/edit/{Id:int}"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Customer</PageTitle>
+
+<h3>Edit Customer</h3>
+
+@if (IsLoading)
+{
+    <p>Loading customer...</p>
+}
+else if (LoadError != null)
+{
+    <div class="alert alert-danger">@LoadError</div>
+}
+else if (Model != null)
+{
+    <EditForm Model="Model" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>ID</label>
+            <InputText class="form-control" Value="@IdText" disabled />
+        </div>
+
+        <div class="mb-3">
+            <label>Name</label>
+            <InputText class="form-control" @bind-Value="Model.FirstName" />
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <InputText class="form-control" @bind-Value="Model.EmailAddress" />
+        </div>
+
+        <button class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary ms-2"
+                @onclick="Cancel">
+            Cancel
+        </button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Customer? Model;
+    private bool IsLoading = true;
+    private string? LoadError;
+
+    private string IdText => Model?.Id.ToString () ?? "";
+
+    protected void Cancel() => Navigation.NavigateTo("/customer-mgmt");
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Model = await Http.GetFromJsonAsync<Customer>($"customers/{Id}");
+            if (Model == null)
+                LoadError = "Customer not found.";
+        }
+        catch (Exception ex)
+        {
+            LoadError = "Failed to load customer: " + ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            await Http.PutAsJsonAsync($"customers/{Id}", Model);
+            Navigation.NavigateTo("/customer-mgmt");
+        }
+        catch (Exception ex)
+        {
+            LoadError = "Error saving customer: " + ex.Message;
+        }
+    }
+}

@@ -1,0 +1,63 @@
+﻿@inherits LayoutComponentBase
+
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<div class="page">
+	<div class="sidebar">
+		<NavMenu />
+	</div>
+
+	<main>
+		<div class="top-row px-4">
+			@* Centralized Authentication UI *@
+			<AuthorizeView>
+				<Authorized>
+					<span class="me-3">Logged in as: <strong>@context.User.Identity?.Name</strong></span>
+
+					<a href="@_logoutUrl" class="btn btn-link nav-link"
+					   style="display:inline; padding:0; border:none; vertical-align:baseline;">
+						Logout
+					</a>
+				</Authorized>
+				<NotAuthorized>
+					@* If they hit a public page, show Login *@
+					<a href="bff/login">Login</a>
+				</NotAuthorized>
+			</AuthorizeView>
+		</div>
+
+		<article class="content px-4">
+			@Body
+		</article>
+	</main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+	An unhandled error has occurred.
+	<a href="." class="reload">Reload</a>
+	<span class="dismiss">🗙</span>
+</div>
+
+@code {
+	private string _logoutUrl = "bff/logout";
+
+	protected override async Task OnInitializedAsync ()
+	{
+		var authState = await AuthStateProvider.GetAuthenticationStateAsync ();
+		var user = authState.User;
+
+		if (user.Identity?.IsAuthenticated == true)
+		{
+			var sid = user.FindFirst ("bff:session_id")?.Value
+				   ?? user.FindFirst ("sid")?.Value;
+
+			if (!string.IsNullOrEmpty (sid))
+			{
+				_logoutUrl = $"bff/logout?sid={Uri.EscapeDataString (sid)}";
+			}
+		}
+	}
+}

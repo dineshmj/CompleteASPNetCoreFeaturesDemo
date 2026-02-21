@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "src\\idp\\MyBank.IDP.csproj",
+        "Action": "Start",
+        "DebugTarget": "SelfHost"
+      },
+      {
+        "Path": "src\\api\\rest\\MyBank.Api.REST.Customer.csproj",
+        "Action": "Start",
+        "DebugTarget": "IIS Express"
+      },
+      {
+        "Path": "src\\web\\MyBank.Web.Customer.csproj",
+        "Action": "Start",
+        "DebugTarget": "IIS Express"
+      }
+    ]
+  }
+]

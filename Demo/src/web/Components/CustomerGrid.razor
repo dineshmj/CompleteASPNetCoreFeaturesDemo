@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using MyBank.Common.Entities
+
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+
+
+@if (UserRolesLoaded == false)
+{
+    <p>Loading user permissions…</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Customers)
+            {
+                <tr>
+                    <td>@c.Id</td>
+                    <td>@c.FirstName</td>
+                    <td>@c.EmailAddress</td>
+                    <td>
+                        <!-- Update -->
+                        @if (CanUpdate)
+                        {
+                            <button class="btn btn-sm btn-primary me-2"
+                                    @onclick="() => EditCustomer (c.Id)">
+                                Update
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-primary me-2" disabled>Update</button>
+                        }
+
+                        <!-- Delete -->
+                        @if (CanDelete)
+                        {
+                            <button class="btn btn-sm btn-danger"
+                                    @onclick="() => DeleteCustomer (c.Id)">
+                                Delete
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-danger" disabled>Delete</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public List<Customer> Customers { get; set; } = new ();
+
+    private bool UserRolesLoaded;
+    private bool CanUpdate;
+    private bool CanDelete;
+
+    protected override async Task OnInitializedAsync ()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync ();
+        var user = authState.User;
+
+        CanUpdate = user.IsInRole ("update_customer");
+        CanDelete = user.IsInRole ("delete_customer");
+
+        UserRolesLoaded = true;
+    }
+
+    private void EditCustomer (int id)
+    {
+        Navigation.NavigateTo ($"/customer/edit/{id}");
+    }
+
+    private async Task DeleteCustomer (int id)
+    {
+        // Your delete logic here
+    }
+}
