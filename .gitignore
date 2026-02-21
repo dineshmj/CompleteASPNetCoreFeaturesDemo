@@ -1,0 +1,22 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/src/.vs
+/src/obj
+/Demo/src/api/.vs
+/Demo/src/api/obj
+/Demo/.vs/CBA.Customer/FileContentIndex
+/Demo/src/api/rest/.vs
+/Demo/src/api/rest/obj
+/Demo/.vs/MyBank.Customer/v18
+/Demo/src/common/obj
+/Demo/.vs/CBA.Customer/DesignTimeBuild
+/Demo/src/idp/bin/Debug/net10.0
+/Demo/src/idp/obj
+/Demo/src/api/rest/bin/Debug/net10.0
+/Demo/src/common/bin/Debug/net10.0
+/Demo/src/web/obj
+/Demo/.vs/MyBank.Customer
+/Demo/src/web/bin/Debug/net10.0
